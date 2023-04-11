@@ -1,6 +1,6 @@
-# Your name: 
+# Your name: Summer Daniel
 # Your student id:
-# Your email:
+# Your email: summerld@umich.edu
 # List who you have worked with on this homework:
 
 import matplotlib.pyplot as plt
@@ -9,6 +9,52 @@ import sqlite3
 import unittest
 
 def load_rest_data(db):
+
+    conn = sqlite3.connect(db)
+    cur = conn.cursor()
+
+   #DELETE UNNESSECARY DICTS!!!!
+    inner_dict = {}
+    outer_dict = {}
+    dict_list = []
+    name_list = []
+    inner_dict_keys = []
+    cur.execute('SELECT name,category_id,building_id,rating FROM restaurants')
+ 
+    names = cur.fetchall()
+    cur.execute('SELECT id, category FROM categories')
+
+    categories = cur.fetchall()
+
+    cur.execute('SELECT id, building FROM buildings')
+    buildings = cur.fetchall()
+
+    for name in names:
+        #print(name)
+        for category in categories:
+            category_id = category[0]
+            if category_id == name[1]:
+                category_name =  category[1]
+                name_list.append(category_name)
+                inner_dict_keys.append('category')
+        for building in buildings:
+            building_id = building[0]
+            if building_id == name[2]:
+                building_name = building[1]
+                name_list.append(building_name)
+                inner_dict_keys.append('building')
+
+        name_list.append(name[3])
+        inner_dict_keys.append('rating')
+        inner_dict = dict(zip(inner_dict_keys, name_list))
+
+        outer_dict[name[0]] = inner_dict
+
+    #print(outer_dict)
+    return outer_dict
+
+    
+
     """
     This function accepts the file name of a database as a parameter and returns a nested
     dictionary. Each outer key of the dictionary is the name of each restaurant in the database, 
@@ -18,6 +64,20 @@ def load_rest_data(db):
     pass
 
 def plot_rest_categories(db):
+    #print(db)
+    conn = sqlite3.connect(db)
+    cur = conn.cursor()
+
+    cur.execute('SELECT id, category FROM categories')
+    categories = cur.fetchall()
+
+    cur.execute('SELECT name,category_id FROM restaurants')
+
+    cur.execute("SELECT restaurants.name,categories.category FROM restaurants JOIN categories ON categories.id = restaurants.category_id")
+ 
+    names = cur.fetchall()
+    print(names)
+
     """
     This function accepts a file name of a database as a parameter and returns a dictionary. The keys should be the
     restaurant categories and the values should be the number of restaurants in each category. The function should
