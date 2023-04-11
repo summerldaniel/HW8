@@ -64,7 +64,7 @@ def load_rest_data(db):
     pass
 
 def plot_rest_categories(db):
-    #print(db)
+
     conn = sqlite3.connect(db)
     cur = conn.cursor()
 
@@ -93,7 +93,12 @@ def plot_rest_categories(db):
     names = list(cat_dict.keys())
     values = list(cat_dict.values())
 
-    plt.bar(range(len(cat_dict)), values, tick_label=names)
+    #plt.barh(range(len(cat_dict)), values, tick_label=names)
+    #plt.show()
+    plt.barh(names, values)
+    plt.title('Types of Restaurants on South U')
+    plt.ylabel('Categories')
+    plt.xlabel('Number of Restaurants')
     #plt.show()
     #UNCOMMENT SHOW????
     return cat_dict
@@ -107,6 +112,7 @@ def plot_rest_categories(db):
     pass
 
 def find_rest_in_building(building_num, db):
+
     conn = sqlite3.connect(db)
     cur = conn.cursor()
 
@@ -130,7 +136,85 @@ def find_rest_in_building(building_num, db):
 
 #EXTRA CREDIT
 def get_highest_rating(db): #Do this through DB as well
+    conn = sqlite3.connect(db)
+    cur = conn.cursor()
+
+    avg_list = []
+    tups_list = []
+    key_list = []
+    cur.execute("SELECT categories.category,restaurants.rating FROM restaurants JOIN categories ON restaurants.category_id = categories.id")
+    cat_rate = cur.fetchall()
+    for tup in cat_rate:
+        cat_name = tup[0]
+        rating = tup[1]
+        cur.execute("SELECT categories.category,AVG(restaurants.rating) FROM restaurants JOIN categories ON restaurants.category_id = categories.id WHERE categories.category = ?", (cat_name,))
+        averages_tups = cur.fetchall()
+        avg_list.append(averages_tups[0])
+    avg_list.sort(key = lambda x: x[1], reverse = True)
+    highest_cat = avg_list[0]
+    tups_list.append(highest_cat)
     
+    cur.execute("SELECT buildings.building,restaurants.rating FROM restaurants JOIN buildings ON restaurants.building_id = buildings.id")
+    buildings_data = cur.fetchall()
+    #print(buildings_data)
+    for building in buildings_data:
+        building_name = str(building[0])
+        #print(building)
+        #mini_list.append(building_name)
+        #mini_list.append(building[1])
+        #buildings_data = tuple(mini_list)
+    #print(buildings_data)
+    buildings_data.sort(key = lambda x: x[1], reverse = True)
+    highest_building = buildings_data[0]
+    tups_list.append(highest_building)
+
+    #print(tups_list)
+    #return tups_list
+    #print(avg_list)
+
+    #BAR PLOT SET UP
+
+    #to remove duplicates
+    avg_list_final = [*set(avg_list)]
+
+    #descending_order
+    avg_list_final.sort(key = lambda x: x[1], reverse = True)
+    buildings_data.sort(key = lambda x: x[1], reverse = True)
+
+    avg_dict = dict(avg_list_final)
+    building_dict = dict(buildings_data)
+
+    categories = list(avg_dict.keys())
+    ratings = list(avg_dict.values())
+    
+    buildings = list(building_dict.keys())
+    for key in buildings:
+        key = str(key)
+        key_list.append(key)
+    build_ratings = list(building_dict.values())
+
+    
+    fig2 = plt.figure("Figure 2")
+
+    plt.subplot(2, 1, 1)
+    plt.barh(categories, ratings)
+    plt.title('Average Restaurant Ratings by Category')
+    plt.ylabel('Category')
+    plt.xlabel('Rating')
+
+    plt.subplot(2, 1, 2)
+    plt.barh(key_list, build_ratings)
+    plt.title('Average Restaurant Ratings by Building')
+    plt.ylabel('Building')
+    plt.xlabel('Rating')
+
+    #plt.show()
+    
+    return tups_list
+
+    
+
+
     """
     This function return a list of two tuples. The first tuple contains the highest-rated restaurant category 
     and the average rating of the restaurants in that category, and the second tuple contains the building number 
