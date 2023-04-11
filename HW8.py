@@ -73,10 +73,31 @@ def plot_rest_categories(db):
 
     cur.execute('SELECT name,category_id FROM restaurants')
 
-    cur.execute("SELECT restaurants.name,categories.category FROM restaurants JOIN categories ON categories.id = restaurants.category_id")
+    #cur.execute("SELECT restaurants.name,categories.category FROM restaurants JOIN categories ON categories.id = restaurants.category_id")
  
-    names = cur.fetchall()
-    print(names)
+    #names = cur.fetchall()
+    #print(names)
+    cat_dict = {}
+    for x in range(1,15):
+        cur.execute("SELECT COUNT(category_id) FROM restaurants WHERE category_id = ?", (x,))
+        count_rough = cur.fetchall()
+        count_clean = count_rough[0][0]
+        #print(count_clean)
+        cur.execute("SELECT categories.category FROM restaurants JOIN categories ON categories.id = restaurants.category_id WHERE category_id = ?", (x,))
+        name_rough = cur.fetchall()
+        name_clean = name_rough[0][0]
+        #print(name_clean)
+        cat_dict[name_clean] = int(count_clean)
+
+    #print(cat_dict)
+    names = list(cat_dict.keys())
+    values = list(cat_dict.values())
+
+    plt.bar(range(len(cat_dict)), values, tick_label=names)
+    #plt.show()
+    #UNCOMMENT SHOW????
+    return cat_dict
+    #cat_dict looks okay don't forget to return it though
 
     """
     This function accepts a file name of a database as a parameter and returns a dictionary. The keys should be the
