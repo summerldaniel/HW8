@@ -107,6 +107,20 @@ def plot_rest_categories(db):
     pass
 
 def find_rest_in_building(building_num, db):
+    conn = sqlite3.connect(db)
+    cur = conn.cursor()
+
+    name_list = []
+    cur.execute("SELECT restaurants.name,restaurants.rating FROM restaurants JOIN buildings ON restaurants.building_id = buildings.id WHERE buildings.building = ?", (building_num,))
+    data = cur.fetchall()
+    data.sort(key = lambda x: x[1], reverse = True)
+    for tup in data:
+        name = tup[0]
+        name_list.append(name)
+
+    #print(name_list)
+    return name_list
+                
     '''
     This function accepts the building number and the filename of the database as parameters and returns a list of 
     restaurant names. You need to find all the restaurant names which are in the specific building. The restaurants 
@@ -116,6 +130,7 @@ def find_rest_in_building(building_num, db):
 
 #EXTRA CREDIT
 def get_highest_rating(db): #Do this through DB as well
+    
     """
     This function return a list of two tuples. The first tuple contains the highest-rated restaurant category 
     and the average rating of the restaurants in that category, and the second tuple contains the building number 
