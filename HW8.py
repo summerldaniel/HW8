@@ -13,7 +13,7 @@ def load_rest_data(db):
     conn = sqlite3.connect(db)
     cur = conn.cursor()
 
-   #DELETE UNNESSECARY DICTS!!!!
+
     inner_dict = {}
     outer_dict = {}
     dict_list = []
@@ -73,10 +73,7 @@ def plot_rest_categories(db):
 
     cur.execute('SELECT name,category_id FROM restaurants')
 
-    #cur.execute("SELECT restaurants.name,categories.category FROM restaurants JOIN categories ON categories.id = restaurants.category_id")
- 
-    #names = cur.fetchall()
-    #print(names)
+
     cat_dict = {}
     for x in range(1,15):
         cur.execute("SELECT COUNT(category_id) FROM restaurants WHERE category_id = ?", (x,))
@@ -93,16 +90,13 @@ def plot_rest_categories(db):
     names = list(cat_dict.keys())
     values = list(cat_dict.values())
 
-    #plt.barh(range(len(cat_dict)), values, tick_label=names)
-    #plt.show()
     plt.barh(names, values)
     plt.title('Types of Restaurants on South U')
     plt.ylabel('Categories')
     plt.xlabel('Number of Restaurants')
-    #plt.show()
-    #UNCOMMENT SHOW????
+    plt.show()
+ 
     return cat_dict
-    #cat_dict looks okay don't forget to return it though
 
     """
     This function accepts a file name of a database as a parameter and returns a dictionary. The keys should be the
@@ -159,11 +153,7 @@ def get_highest_rating(db): #Do this through DB as well
     #print(buildings_data)
     for building in buildings_data:
         building_name = str(building[0])
-        #print(building)
-        #mini_list.append(building_name)
-        #mini_list.append(building[1])
-        #buildings_data = tuple(mini_list)
-    #print(buildings_data)
+
     buildings_data.sort(key = lambda x: x[1], reverse = True)
     highest_building = buildings_data[0]
     tups_list.append(highest_building)
@@ -208,7 +198,7 @@ def get_highest_rating(db): #Do this through DB as well
     plt.ylabel('Building')
     plt.xlabel('Rating')
 
-    #plt.show()
+    plt.show()
     
     return tups_list
 
